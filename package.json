@@ -1,0 +1,84 @@
+{
+  "name": "tradelog",
+  "version": "1.0.0",
+  "description": "Personal Trading Journal — Local Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "react-start": "react-scripts start",
+    "react-build": "react-scripts build",
+    "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "dev": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "build-win": "npm run react-build && electron-builder --win",
+    "build-mac": "npm run react-build && electron-builder --mac",
+    "build-linux": "npm run react-build && electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.tradelog.app",
+    "productName": "TradeLog",
+    "publish": {
+      "provider": "github",
+      "owner": "DominicApple",
+      "repo": "Trading-Journal"
+    },
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "build/**/*",
+      "main.js",
+      "preload.js"
+    ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TradeLog"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png"
+    }
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.8.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "wait-on": "^7.0.1"
+  },
+  "homepage": "./",
+  "browserslist": {
+    "production": [
+      "last 1 electron version"
+    ],
+    "development": [
+      "last 1 electron version"
+    ]
+  }
+}
