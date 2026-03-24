@@ -147,8 +147,22 @@ export function TradeCard({ trade, onClick }) {
 }
 
 // ── Trade Form ──
-export function TradeForm({ onSave, onCancel }) {
-  const [f,setF] = useState({
+export function TradeForm({ onSave, onCancel, initialValues }) {
+  const isEditing = !!initialValues;
+  const [f,setF] = useState(() => isEditing ? {
+    date: initialValues.date,
+    pair: initialValues.pair,
+    direction: initialValues.direction,
+    entry: String(initialValues.entry),
+    exit: String(initialValues.exit),
+    size: String(initialValues.size),
+    emotion: initialValues.emotion || "neutral",
+    rating: initialValues.rating || 3,
+    confluences: initialValues.confluences || [],
+    quickThoughts: initialValues.quickThoughts?.length ? initialValues.quickThoughts : [""],
+    result: initialValues.result,
+    pnl: String(Math.abs(initialValues.pnl)),
+  } : {
     date:today(), pair:PAIRS[0], direction:"LONG", entry:"", exit:"", size:"0.01",
     emotion:"neutral", rating:3, confluences:[], quickThoughts:[""], result:"win", pnl:"",
   });
@@ -158,10 +172,13 @@ export function TradeForm({ onSave, onCancel }) {
   const handleSave = () => {
     if (!f.entry||!f.exit||!f.pnl) return;
     onSave({
-      ...f, id:uid(),
+      ...(initialValues||{}),
+      ...f,
+      id: isEditing ? initialValues.id : uid(),
       entry:parseFloat(f.entry), exit:parseFloat(f.exit), size:parseFloat(f.size),
       pnl:f.result==="win"?Math.abs(parseFloat(f.pnl)):-Math.abs(parseFloat(f.pnl)),
-      pair:f.pair.toUpperCase(), journal:"",
+      pair:f.pair.toUpperCase(),
+      journal: isEditing ? (initialValues.journal||"") : "",
       quickThoughts: f.quickThoughts.filter(t=>t.trim()),
     });
   };
@@ -169,7 +186,7 @@ export function TradeForm({ onSave, onCancel }) {
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.65)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000,backdropFilter:"blur(6px)",animation:"fadeIn 0.15s ease"}} onClick={onCancel}>
       <div onClick={e=>e.stopPropagation()} style={{background:"var(--bg2)",border:"1px solid var(--bord)",borderRadius:16,padding:28,width:480,maxHeight:"88vh",overflowY:"auto",boxShadow:"0 24px 48px rgba(0,0,0,0.5)"}}>
-        <div style={{fontSize:18,fontWeight:700,color:"var(--t1)",marginBottom:20,fontFamily:"var(--display)"}}>New Trade Card</div>
+        <div style={{fontSize:18,fontWeight:700,color:"var(--t1)",marginBottom:20,fontFamily:"var(--display)"}}>{isEditing?"Edit Trade Card":"New Trade Card"}</div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
           {/* Date */}
           <div><label style={lbl}>Date</label><input type="date" value={f.date} onChange={e=>set("date",e.target.value)} style={inp}/></div>
@@ -235,7 +252,7 @@ export function TradeForm({ onSave, onCancel }) {
         </div>
         <div style={{display:"flex",gap:10,marginTop:22,justifyContent:"flex-end"}}>
           <button onClick={onCancel} style={{padding:"9px 22px",borderRadius:8,border:"1px solid var(--bord)",background:"transparent",color:"var(--t2)",cursor:"pointer",fontSize:12,fontFamily:"var(--display)"}}>Cancel</button>
-          <button onClick={handleSave} style={{padding:"9px 26px",borderRadius:8,border:"none",background:`linear-gradient(135deg,var(--a1),var(--a2))`,color:"#fff",cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"var(--display)"}}>Save Trade</button>
+          <button onClick={handleSave} style={{padding:"9px 26px",borderRadius:8,border:"none",background:`linear-gradient(135deg,var(--a1),var(--a2))`,color:"#fff",cursor:"pointer",fontSize:12,fontWeight:600,fontFamily:"var(--display)"}}>{isEditing?"Update Trade":"Save Trade"}</button>
         </div>
       </div>
     </div>

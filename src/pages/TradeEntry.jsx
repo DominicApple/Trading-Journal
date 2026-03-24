@@ -116,6 +116,7 @@ function MonthDeck({ monthKey, trades, onSelectTrade, isOpen, onToggle }) {
 export default function TradeEntryPage({ trades, setTrades, onHome, onBack, logoEmoji, logoG1, logoG2 }) {
   const [showForm, setShowForm] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
   const [suitFilter, setSuitFilter] = useState("all");
   const [pairFilter, setPairFilter] = useState("all");
   const [sortDir, setSortDir] = useState("desc"); // newest first
@@ -145,8 +146,16 @@ export default function TradeEntryPage({ trades, setTrades, onHome, onBack, logo
   const addTrade = trade => {
     setTrades(prev=>[...prev,trade]);
     setShowForm(false);
-    // Auto-open the deck for this trade
     setOpenDecks(p=>({...p,[mkKey(trade.date)]:true}));
+  };
+  const editTrade = updated => {
+    setTrades(prev=>prev.map(t=>t.id===updated.id?updated:t));
+    setSelected(updated);
+    setShowEditForm(false);
+  };
+  const deleteTrade = id => {
+    setTrades(prev=>prev.filter(t=>t.id!==id));
+    setSelected(null);
   };
   const updateJournal = (id,text)=>setTrades(prev=>prev.map(t=>t.id===id?{...t,journal:text}:t));
 
@@ -155,7 +164,10 @@ export default function TradeEntryPage({ trades, setTrades, onHome, onBack, logo
     const qs = selected.quickThoughts||[];
     return (
       <div style={{minHeight:"100vh"}}>
-        <PageHeader title={`${selected.pair} · ${selected.date}`} onHome={onHome} onBack={()=>setSelected(null)} logoEmoji={logoEmoji} logoG1={logoG1} logoG2={logoG2}/>
+        <PageHeader title={`${selected.pair} · ${selected.date}`} onHome={onHome} onBack={()=>setSelected(null)} logoEmoji={logoEmoji} logoG1={logoG1} logoG2={logoG2}>
+          <button onClick={()=>setShowEditForm(true)} style={{padding:"7px 16px",borderRadius:8,border:"1px solid var(--a1)",background:"rgba(var(--a1-rgb),0.1)",color:"var(--a1)",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"var(--display)"}}>✏️ Edit Card</button>
+          <button onClick={()=>{ if(window.confirm("Delete this trade? This cannot be undone.")) deleteTrade(selected.id); }} style={{padding:"7px 16px",borderRadius:8,border:"1px solid #ef4444",background:"rgba(239,68,68,0.08)",color:"#ef4444",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"var(--display)"}}>🗑 Delete</button>
+        </PageHeader>
         <div style={{padding:24,animation:"fadeIn 0.2s"}}>
           <div style={{display:"grid",gridTemplateColumns:"380px 1fr",gap:20,maxWidth:1100,margin:"0 auto"}}>
             <TradeCard trade={selected} onClick={()=>{}}/>
@@ -173,6 +185,7 @@ export default function TradeEntryPage({ trades, setTrades, onHome, onBack, logo
             </div>
           </div>
         </div>
+        {showEditForm&&<TradeForm initialValues={selected} onSave={editTrade} onCancel={()=>setShowEditForm(false)}/>}
       </div>
     );
   }
