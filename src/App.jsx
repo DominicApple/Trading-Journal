@@ -3,6 +3,7 @@ import { useLocalState } from "./hooks";
 import { THEMES } from "./themes";
 import { uid } from "./utils";
 import { AccountDropdownSmall } from "./components/Shared";
+import UpdateBanner from "./components/UpdateBanner";
 import Homepage from "./pages/Homepage";
 import TradeEntryPage from "./pages/TradeEntry";
 import BacktestPage from "./pages/Backtest";
@@ -133,6 +134,9 @@ export default function App() {
     <div style={{ minHeight:"100vh", background:"var(--bg)", color:"var(--t1)", fontFamily:"var(--body)", position:"relative" }}>
       <style>{cssVars}</style>
 
+      {/* In-app update banner */}
+      <UpdateBanner />
+
       {/* Ambient background blobs */}
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0}}>
         <div style={{position:"absolute",top:"10%",left:"5%",width:500,height:500,borderRadius:"50%",background:`radial-gradient(circle,${theme.a1}0a 0%,transparent 70%)`,animation:"neonDrift1 12s ease-in-out infinite"}}/>
@@ -142,7 +146,7 @@ export default function App() {
 
       <div style={{position:"relative",zIndex:1}}>
         {page==="home" && (
-          <HomeScreen accounts={accounts} allData={allData} onAddAccount={addAccount} onDeleteAccount={deleteAccount} onSelectAccount={selectAccount} logoEmoji={logoEmoji} logoG1={logoG1} logoG2={logoG2}/>
+          <HomeScreen accounts={accounts} allData={allData} onAddAccount={addAccount} onDeleteAccount={deleteAccount} onSelectAccount={selectAccount} onOpenSettings={()=>navigate("settings")} logoEmoji={logoEmoji} logoG1={logoG1} logoG2={logoG2}/>
         )}
         {page==="dashboard" && activeAccountId && (
           <Homepage

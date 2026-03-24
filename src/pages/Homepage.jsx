@@ -94,15 +94,41 @@ export default function Homepage({ trades, navigate, accountDropdown, onHome, ac
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
             {[
               {label:"Best Pair",  value:trades.length>0?(()=>{const p={};trades.forEach(t=>{if(!p[t.pair])p[t.pair]=0;p[t.pair]+=t.pnl;});const b=Object.entries(p).sort((a,c)=>c[1]-a[1])[0];return b?b[0]:"—";})():"—", sub:"by total P&L",    col:"#00d4ff"},
-              {label:"Win Streak", value:(()=>{let max=0,cur=0;[...trades].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{if(t.result==="win"){cur++;max=Math.max(max,cur);}else cur=0;});return max||"—";})(),                         sub:"consecutive",    col:"#7c3aed"},
+              {label:"Win Streak", value:(()=>{let max=0,cur=0;[...trades].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{if(t.result==="win"){cur++;max=Math.max(max,cur);}else cur=0;});return max||"—";})(),                         sub:"consecutive",    col:"#ff6b00", fire:true},
               {label:"Avg R:R",    value:(()=>{const w=trades.filter(t=>t.result==="win");const l=trades.filter(t=>t.result==="loss");if(!w.length||!l.length)return"—";const aw=w.reduce((s,t)=>s+Math.abs(t.pnl),0)/w.length;const al=l.reduce((s,t)=>s+Math.abs(t.pnl),0)/l.length;return`1:${(aw/al).toFixed(1)}`;})(), sub:"risk to reward",  col:"#c026d3"},
               {label:"Win Rate",   value:trades.length>0?`${((wins.length/trades.length)*100).toFixed(0)}%`:"—",                                                                                                                                 sub:"overall accuracy",col:"#00d4ff"},
             ].map((item,i)=>(
-              <div key={i} style={{background:"var(--bg3)",border:"1px solid var(--bord)",borderRadius:10,padding:"12px 14px"}}>
-                <div style={{fontSize:9,letterSpacing:"0.1em",color:"var(--t3)",textTransform:"uppercase",fontFamily:"var(--mono)",marginBottom:5}}>{item.label}</div>
-                <div style={{fontSize:18,fontWeight:700,fontFamily:"var(--mono)",lineHeight:1.1,background:`linear-gradient(135deg,${item.col},#7c3aed)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>{item.value}</div>
-                <div style={{fontSize:10,color:"var(--t3)",marginTop:3,fontFamily:"var(--mono)"}}>{item.sub}</div>
-              </div>
+              item.fire ? (
+                <div key={i} style={{
+                  background:"linear-gradient(135deg,rgba(255,107,0,0.12),rgba(220,38,38,0.08))",
+                  border:"1px solid rgba(255,107,0,0.3)",
+                  borderRadius:10,padding:"12px 14px",position:"relative",overflow:"hidden",
+                  boxShadow:"0 0 18px rgba(255,107,0,0.15), inset 0 0 20px rgba(255,60,0,0.05)",
+                }}>
+                  <style>{`
+                    @keyframes fireFlicker {
+                      0%,100%{opacity:1;transform:scaleY(1) translateY(0)}
+                      25%{opacity:.85;transform:scaleY(1.04) translateY(-1px)}
+                      50%{opacity:.9;transform:scaleY(.97) translateY(1px)}
+                      75%{opacity:.88;transform:scaleY(1.03) translateY(-1px)}
+                    }
+                    @keyframes fireGlow {
+                      0%,100%{box-shadow:0 0 18px rgba(255,107,0,0.2),inset 0 0 20px rgba(255,60,0,0.05)}
+                      50%{box-shadow:0 0 32px rgba(255,107,0,0.4),inset 0 0 30px rgba(255,60,0,0.1)}
+                    }
+                  `}</style>
+                  <div style={{position:"absolute",top:6,right:8,fontSize:18,animation:"fireFlicker 1.4s ease-in-out infinite"}}>🔥</div>
+                  <div style={{fontSize:9,letterSpacing:"0.1em",color:"#fb923c",textTransform:"uppercase",fontFamily:"var(--mono)",marginBottom:5,fontWeight:700}}>{item.label}</div>
+                  <div style={{fontSize:18,fontWeight:700,fontFamily:"var(--mono)",lineHeight:1.1,background:"linear-gradient(135deg,#ff6b00,#dc2626)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",animation:"fireFlicker 1.4s ease-in-out infinite"}}>{item.value}</div>
+                  <div style={{fontSize:10,color:"#fb923c",marginTop:3,fontFamily:"var(--mono)",opacity:0.8}}>{item.sub}</div>
+                </div>
+              ) : (
+                <div key={i} style={{background:"var(--bg3)",border:"1px solid var(--bord)",borderRadius:10,padding:"12px 14px"}}>
+                  <div style={{fontSize:9,letterSpacing:"0.1em",color:"var(--t3)",textTransform:"uppercase",fontFamily:"var(--mono)",marginBottom:5}}>{item.label}</div>
+                  <div style={{fontSize:18,fontWeight:700,fontFamily:"var(--mono)",lineHeight:1.1,background:`linear-gradient(135deg,${item.col},#7c3aed)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>{item.value}</div>
+                  <div style={{fontSize:10,color:"var(--t3)",marginTop:3,fontFamily:"var(--mono)"}}>{item.sub}</div>
+                </div>
+              )
             ))}
           </div>
           <div style={{marginTop:12,display:"flex",gap:12}}>

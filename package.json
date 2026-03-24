@@ -1,13 +1,15 @@
 {
   "name": "tradelog",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Personal Trading Journal — Local Desktop App",
   "main": "main.js",
   "scripts": {
     "react-start": "react-scripts start",
     "react-build": "react-scripts build",
-    "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "dev": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "start": "concurrently \"npm run ui\" \"wait-on http://localhost:3001 && npm run app\"",
+    "dev": "concurrently \"npm run ui\" \"wait-on http://localhost:3001 && npm run app\"",
+    "ui": "set PORT=3001 && react-scripts start",
+    "app": "node launch-electron.js",
     "build-win": "npm run react-build && electron-builder --win",
     "build-mac": "npm run react-build && electron-builder --mac",
     "build-linux": "npm run react-build && electron-builder --linux"
@@ -65,7 +67,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.0",
-    "electron": "^28.0.0",
+    "cross-env": "^10.1.0",
+    "electron": "^28.3.3",
     "electron-builder": "^24.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
